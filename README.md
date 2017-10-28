@@ -1,11 +1,8 @@
 # About
-In this project we were instructed to create a secure file a
+A work in progress epub file encryption tool
 
 * prevents interception - confidentiality
 * prevents tampering
-* prevents impersonation
-
-
 
 # Building Instructions
 To install dependencies and run tests the following instructions should be followed
