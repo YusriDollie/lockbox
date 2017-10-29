@@ -9,9 +9,6 @@ block_size = 16
 IV = block_size * '\x00'
 mode = AES.MODE_CBC
 
-message = 'hello world'
-password = 'abcdefghijklmnopqrstuvwxyz'
-test_key = hashlib.sha256(password.encode()).digest()
 
 def create_key(text):
     if type(text) is str:

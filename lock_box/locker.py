@@ -7,7 +7,7 @@ import tempfile
 def read_line():
     return sys.stdin.readline().strip()
 
-
+#simple menu interface will update in future
 def main():
     running = True
     while running:
@@ -43,7 +43,7 @@ def updateZip(zipname, filename, data):
     with zipfile.ZipFile(zipname, mode='a', compression=zipfile.ZIP_DEFLATED) as out_zip:
         out_zip.writestr(filename, data)
 
-
+# pre-processing epub to zip file
 def preprocess(filepath):
     if filepath[-4:] != "epub":
         print("invalid file type")
@@ -52,7 +52,7 @@ def preprocess(filepath):
         os.rename(filepath, filepath[0:-4]+"zip")
         return filepath[0:-4]+"zip"
 
-
+# post-processing zip file to epub
 def postprocess(filepath):
     if filepath[-3:] != "zip":
         print("invalid file type")
@@ -67,10 +67,13 @@ def encrypt():
     file_path = read_line()
     print("Please enter Encryption pass phrase")
     password = read_line()
+    # generating AES cipher using inputted password
     key = c.create_key(password)
+    # turning .epub into .zip for ease of use
     zip_name = preprocess(file_path)
     with zipfile.ZipFile(zip_name, mode='r') as myzip:
         for name in myzip.namelist():
+                # encrypt only the files that require encryption, ignore meta and image files
                 if name.endswith(".xhtml") or name.endswith(".css") or name.endswith(".opf") or name.endswith(".ncx") :
                     with myzip.open(name) as in_file:
                         contents = in_file.read()
@@ -85,11 +88,15 @@ def encrypt():
 
 
 def decrypt():
+    # Its importanr to note that we do not check for a successful decryption or correct password
+    # If intercepted we do not want to give attackers the ability to discern correct from incorrect attempts
     print("Please enter path to file")
     file_path = read_line()
     print("Please enter Encryption pass phrase")
     password = read_line()
+    # generating AES cipher using inputted password
     key = c.create_key(password)
+    # turning .epub into .zip for ease of use
     zip_name = preprocess(file_path)
     with zipfile.ZipFile(zip_name, mode='r') as myzip:
         for name in myzip.namelist():
