@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'pytest',
         'cryptography',
+        'pycrypto',
         'arrow',
         # linters and type checkers
         'prospector',
