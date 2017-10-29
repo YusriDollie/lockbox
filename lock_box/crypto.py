@@ -23,7 +23,7 @@ def generate_key(size=32):
 
 # padding methods for blocks
 pad = lambda s: s + (block_size - len(s) % block_size) * chr(block_size - len(s) % block_size).encode()
-unpad = lambda s: s[:-ord(s[len(s)-1:])]
+unpad = lambda s: s[0:-s[-1]]
 
 # AES Code
 
