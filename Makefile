@@ -5,7 +5,7 @@ clean:
 	rm -rf **/*.pyc **/__pycache__ .mypy_cache/
 
 deps:
-	pip install .
+	pip3 install .
 
 lint:
 	prospector
