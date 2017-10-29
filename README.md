@@ -2,7 +2,6 @@
 A work in progress epub file encryption tool
 
 * prevents interception - confidentiality
-* prevents tampering
 
 # Building Instructions
 To install dependencies and run tests the following instructions should be followed
@@ -39,3 +38,8 @@ The type checker can be run separately using:
 ```
 make type_check
 ```
+
+
+## Future Developments
+* Add digital signing using file hash digest
+* Add UI for ease of use
