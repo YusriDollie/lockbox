@@ -5,6 +5,7 @@ A work in progress epub file encryption tool
 
 # Building Instructions
 To install dependencies and run tests the following instructions should be followed
+* Requires Python 3
 
 ## Installing Dependencies
 
