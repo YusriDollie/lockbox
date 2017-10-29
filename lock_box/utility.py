@@ -3,7 +3,7 @@ import zipfile
 import os
 import tempfile
 import epub
-import regex
+
 
 
 def get_epub_info(filepath):
@@ -14,13 +14,6 @@ def get_epub_info(filepath):
         contents.append(item.href)
     return contents
 
-
-def match_content(search, content):
-    for item in content:
-        if regex.search('(?:'+search+'){e<=1}', item).group(0):
-            return True
-    else:
-        return False
 
 def read_line():
     return sys.stdin.readline().strip()
