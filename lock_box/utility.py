@@ -5,7 +5,6 @@ import tempfile
 import epub
 
 
-
 def get_epub_info(filepath):
     book = epub.open_epub(filepath)
     contents = []
@@ -40,6 +39,8 @@ def update_zip(zipname, filename, data):
         out_zip.writestr(filename, data)
 
 # pre-processing epub to zip file
+
+
 def preprocess(filepath):
     if filepath[-4:] != "epub":
         print("invalid file type")
@@ -49,6 +50,8 @@ def preprocess(filepath):
         return filepath[0:-4]+"zip"
 
 # post-processing zip file to epub
+
+
 def postprocess(filepath):
     if filepath[-3:] != "zip":
         print("invalid file type")
