@@ -14,6 +14,22 @@ To install dependencies and run tests the following instructions should be follo
 make deps
 ```
 
+
+## Quick Usage
+Once dependancies have been built, simple navigate to lockbox/lock_box
+and execute python3 locker.py
+this will prompt you to select the mode of operation
+either e to encrypt, d to decrypt or q to quit
+sample input
+```
+Input mode (e)ncrypt (d)ecrypt (q)uit
+e
+Please enter path to file
+some.epub
+please enter Encryption pass phrase
+password
+```
+
 ## Running Tests
 
 ```
