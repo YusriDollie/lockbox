@@ -16,7 +16,7 @@ make deps
 
 
 ## Quick Usage
-Once dependancies have been built, simple navigate to lockbox/lock_box
+Once dependencies have been built, simple navigate to lockbox/lock_box
 and execute python3 locker.py
 this will prompt you to select the mode of operation
 either e to encrypt, d to decrypt or q to quit
