@@ -1,13 +1,9 @@
 import crypto as c
-import sys
+import utility as u
 import zipfile
-import os
-import tempfile
 
-def read_line():
-    return sys.stdin.readline().strip()
 
-#simple menu interface will update in future
+# simple menu interface will update in future
 def main():
     running = True
     while running:
@@ -23,94 +19,74 @@ def main():
             print("Invalid Operation")
 
 
-def updateZip(zipname, filename, data):
-    # generate a temp file
-    tmpfd, tmpname = tempfile.mkstemp(dir=os.path.dirname(zipname))
-    os.close(tmpfd)
-
-    # create a temp copy of the archive without filename
-    with zipfile.ZipFile(zipname, 'r') as zin:
-        with zipfile.ZipFile(tmpname, 'w') as zout:
-            zout.comment = zin.comment  # preserve the comment
-            for item in zin.infolist():
-                if item.filename != filename:
-                    zout.writestr(item, zin.read(item.filename))
-
-    # replace with the temp archive
-    os.remove(zipname)
-    os.rename(tmpname, zipname)
-
-    with zipfile.ZipFile(zipname, mode='a', compression=zipfile.ZIP_DEFLATED) as out_zip:
-        out_zip.writestr(filename, data)
-
-# pre-processing epub to zip file
-def preprocess(filepath):
-    if filepath[-4:] != "epub":
-        print("invalid file type")
-        sys.exit(0)
-    else:
-        os.rename(filepath, filepath[0:-4]+"zip")
-        return filepath[0:-4]+"zip"
-
-# post-processing zip file to epub
-def postprocess(filepath):
-    if filepath[-3:] != "zip":
-        print("invalid file type")
-        sys.exit(0)
-    else:
-        os.rename(filepath, filepath[0:-3]+"epub")
-        return filepath[0:-3]+"epub"
-
 
 def encrypt():
     print("Please enter path to file")
-    file_path = read_line()
+    file_path = u.read_line()
     print("Please enter Encryption pass phrase")
-    password = read_line()
+    password = u.read_line()
+    manifest = u.get_epub_info(file_path)
+    actual_content = []
     # generating AES cipher using inputted password
     key = c.create_key(password)
     # turning .epub into .zip for ease of use
-    zip_name = preprocess(file_path)
+    zip_name = u.preprocess(file_path)
     with zipfile.ZipFile(zip_name, mode='r') as myzip:
         for name in myzip.namelist():
-                # encrypt only the files that require encryption, ignore meta and image files
-                if name.endswith(".xhtml") or name.endswith(".css") or name.endswith(".opf") or name.endswith(".ncx") :
-                    with myzip.open(name) as in_file:
-                        contents = in_file.read()
-                        out = c.encrypt_AES(key, contents)
-                    updateZip(zip_name, name, out)
-                else:
-                    with myzip.open(name) as in_file:
-                        contents = in_file.read()
-                        updateZip(zip_name, name, contents)
+            if name.startswith("OEBPS/"):
+                actual_content.append(name[6:])
+            # encrypt only the files that require encryption, ignore meta and image files
+            if name.endswith(".xhtml") or name.endswith(".css") or name.endswith(".opf") or name.endswith(".ncx") :
+                with myzip.open(name) as in_file:
+                    contents = in_file.read()
+                    out = c.encrypt_AES(key, contents)
+                u.update_zip(zip_name, name, out)
+            else:
+                with myzip.open(name) as in_file:
+                    contents = in_file.read()
+                    u.update_zip(zip_name, name, contents)
 
-    postprocess(zip_name)
+    # Compare the file manifest to files found
+    for item in manifest:
+        if item in actual_content:
+            actual_content.remove(item)
+
+    # Must remove this file as it isn't tracked in the actual manifest
+    actual_content.remove("package.opf")
+    actual_content.remove("")
+    if len(actual_content) > 0:
+        print(len(actual_content))
+        print("[WARN] Following items not listed in manifest")
+        for item in actual_content:
+            print(item)
+
+    u.postprocess(zip_name)
 
 
 def decrypt():
     # Its importanr to note that we do not check for a successful decryption or correct password
     # If intercepted we do not want to give attackers the ability to discern correct from incorrect attempts
     print("Please enter path to file")
-    file_path = read_line()
+    file_path = u.read_line()
     print("Please enter Encryption pass phrase")
-    password = read_line()
+    password = u.read_line()
     # generating AES cipher using inputted password
     key = c.create_key(password)
     # turning .epub into .zip for ease of use
-    zip_name = preprocess(file_path)
+    zip_name = u.preprocess(file_path)
     with zipfile.ZipFile(zip_name, mode='r') as myzip:
         for name in myzip.namelist():
                 if name.endswith(".xhtml") or name.endswith(".css") or name.endswith(".opf") or name.endswith(".ncx") :
                     with myzip.open(name) as in_file:
                         contents = in_file.read()
                         out = c.decrypt_AES(key, contents)
-                    updateZip(zip_name, name, out)
+                    u.update_zip(zip_name, name, out)
                 else:
                     with myzip.open(name) as in_file:
                         contents = in_file.read()
-                        updateZip(zip_name, name, contents)
+                        u.update_zip(zip_name, name, contents)
 
-    postprocess(zip_name)
+    u.postprocess(zip_name)
 
 
 
