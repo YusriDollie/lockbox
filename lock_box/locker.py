@@ -54,9 +54,9 @@ def encrypt():
     # Must remove this file as it isn't tracked in the actual manifest
     # actual_content.remove("package.opf")
     # actual_content.remove("")
-    
+
     if len(actual_content) > 0:
-        print(len(actual_content))
+        # print(len(actual_content)+" Files not listed in manifest")
         print("[WARN] Following items not listed in manifest")
         for item in actual_content:
             print(item)
